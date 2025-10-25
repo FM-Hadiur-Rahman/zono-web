@@ -6,7 +6,7 @@ const fromQuery = params.get("from");
 
 const DEMO_EMAILS = [
   "admin@zonoapp.com", // zono_admin
-  "rasan@burgerme.local", // tenant_admin
+  "ara@burgerme.local", // tenant_admin
   "manager@burgerme.local", // manager
   "employee@burgerme.local", // employee
   "rider@burgerme.local", // rider
