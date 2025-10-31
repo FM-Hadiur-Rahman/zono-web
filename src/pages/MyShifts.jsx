@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { api } from "../services/api";
 import RequestSwap from "../components/RequestSwap.jsx";
+import ClockButtons from "../components/ClockButtons.jsx";
 
 /* ---------------- helpers ---------------- */
 const toISODate = (x) =>
@@ -90,7 +91,14 @@ export default function MyShifts() {
   const [err, setErr] = useState("");
 
   // availability
+
+  // below: const [rows, setRows] = useState([]);
   const todayISO = new Date().toISOString().slice(0, 10);
+  const myTodayShift = useMemo(
+    () => rows.find((s) => toISODate(s.date) === todayISO) || null,
+    [rows, todayISO]
+  );
+
   const [availDate, setAvailDate] = useState(todayISO);
   const [availStart, setAvailStart] = useState("09:00");
   const [availEnd, setAvailEnd] = useState("17:00");
@@ -263,6 +271,25 @@ export default function MyShifts() {
           </button>
         </div>
       </header>
+      {user?.employeeId && (
+        <div className="card p-4 flex items-center justify-between">
+          <div>
+            <div className="font-medium">Today</div>
+            {myTodayShift ? (
+              <div>
+                {myTodayShift.start} – {myTodayShift.end} ({myTodayShift.role})
+              </div>
+            ) : (
+              <div className="text-slate-500 text-sm">No shift assigned</div>
+            )}
+          </div>
+
+          <ClockButtons
+            employeeId={user.employeeId}
+            shiftId={myTodayShift?.id}
+          />
+        </div>
+      )}
 
       <div className="text-sm text-slate-600">
         Range: {fmtDayDate(wb.from)} → {fmtDayDate(wb.to)}

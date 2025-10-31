@@ -3,6 +3,8 @@ import { api } from "../services/api";
 import { useAuth } from "../context/AuthContext.jsx";
 import RequestSwap from "../components/RequestSwap.jsx";
 import { useToast } from "../components/Toast.jsx";
+import ClockButtons from "../components/ClockButtons.jsx";
+
 /* ---------- helpers ---------- */
 const toISODate = (x) =>
   typeof x === "string"
@@ -86,6 +88,11 @@ export default function Shifts() {
   );
   const canRequestSwap = ["employee", "rider"].includes(user?.role); // employees can request swaps
 
+  const isSelf = (r) =>
+    r.employeeId && user?.employeeId && r.employeeId === user.employeeId;
+
+  const isToday = (iso) =>
+    toISODate(iso) === new Date().toISOString().slice(0, 10);
   /* Return a display name for a row/availability item */
   const getEmployeeDisplay = (obj) => {
     const embeddedName =
@@ -405,6 +412,8 @@ export default function Shifts() {
               <th className="py-2">Start</th>
               <th className="py-2">End</th>
               <th className="py-2">Role</th>
+              <th className="py-2 w-36">Clock</th>
+
               {canRequestSwap && <th className="py-2 w-28">Swap</th>}
               {isManager && <th className="py-2 w-28">Actions</th>}
             </tr>
@@ -417,6 +426,13 @@ export default function Shifts() {
                 <td className="py-2">{r.start}</td>
                 <td className="py-2">{r.end}</td>
                 <td className="py-2">{r.role}</td>
+                <td className="py-2">
+                  {(isManager || isSelf(r)) && isToday(r.date) ? (
+                    <ClockButtons employeeId={r.employeeId} shiftId={r.id} />
+                  ) : (
+                    <span className="text-slate-400 text-xs">—</span>
+                  )}
+                </td>
 
                 {canRequestSwap && (
                   <td className="py-2">
